@@ -1,0 +1,6 @@
+## Interface: 60000
+## Title: Guild Relay
+## Notes: Some text about relaying guild chat thingimabob
+## Version: 0.1
+GuildRelay.lua
+GuildRelay.xml
