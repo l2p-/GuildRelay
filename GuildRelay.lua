@@ -7,6 +7,7 @@ local debugMode = true;
 local clientId = 0;
 local relayMaster = nil;
 local relayMasterId = 0;
+local playerName = nil;
 
 local relayChannelName = "GuildRelay";
 local isInititalized = false;
@@ -74,6 +75,9 @@ local function relayMessage(self, event, ...)
 
 	debugMessage("Recieved chat message to relay");
 
+	unitName, unitRealm = UnitName("player");
+	playerName = unitName .. "-" .. GetRealmName();
+
 	message, author, language, arg4, arg5, arg6, arg7, arg8, arg9, arg10, lineId, senderGuid = ...;
 	if isRelayMaster() then
 		number, name, id = GetChannelName(relayChannelName);
@@ -97,20 +101,22 @@ local function handleComm(self, event, ...)
 	if prefix == COMM_PREFIX then
 
 		if message == COMM_ASK_FOR_MASTER then
-			if not sender == GetUnitName("player", false) then
+			debugMessage(COMM_ASK_FOR_MASTER);
+			if not (sender == playerName) then
+				debugMessage("sender: " .. sender .. " playerName: " .. playerName);
 				if isRelayMaster() then
 					sendAddonBroadcast(COMM_I_AM_MASTER .. clientId);
 				end
 			end
 
 		elseif string.sub(message, 1, string.len(COMM_I_AM_MASTER)) == COMM_I_AM_MASTER then
-			if not sender == GetUnitName("player", false) then
+			if not (sender == playerName) then
 				relayMaster = sender;
 				relayMasterId = tonumber(string.sub(message, string.len(COMM_I_AM_MASTER) + 1));
 			end
 
 		elseif string.sub(message, 1, string.len(COMM_ID_CHECK_PREFIX)) == COMM_ID_CHECK_PREFIX then
-			if not sender == GetUnitName("player", false) then
+			if not (sender == playerName) then
 				if tonumber(string.sub(message, string.len(COMM_ID_CHECK_PREFIX) + 1)) > relayMasterId then
 					relayMaster = sender;
 					relayMasterId = tonumber(string.sub(message, string.len(COMM_ID_CHECK_PREFIX) + 1));
@@ -118,7 +124,7 @@ local function handleComm(self, event, ...)
 			end
 		end
 
-		DEFAULT_CHAT_FRAME:AddMessage(prefix .. message .. channel .. sender, 1, 1, 1);
+		debugMessage("Addon message: " .. prefix .. message .. channel .. sender);
 	end
 end
 frame2:SetScript("OnEvent", handleComm);
@@ -167,6 +173,7 @@ function SlashCmdList.GUILDRELAY(message, editbox)
 		DEFAULT_CHAT_FRAME:AddMessage("relayMasterId: " .. relayMasterId, 1, 1, 1);
 		DEFAULT_CHAT_FRAME:AddMessage("relayChannelName: " .. relayChannelName, 1, 1, 1);
 		DEFAULT_CHAT_FRAME:AddMessage("isInitialized: " .. tostring(isInititalized), 1, 1, 1);
+		DEFAULT_CHAT_FRAME:AddMessage("playerName: " .. tostring(playerName), 1, 1, 1);
 	else
 		DEFAULT_CHAT_FRAME:AddMessage("\"" .. command .. "\" - " .. "Invalid command", 1, 1, 1);
 	end
