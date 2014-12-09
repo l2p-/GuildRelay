@@ -2,6 +2,9 @@ local COMM_PREFIX = "GuildRelay";
 local COMM_ASK_FOR_MASTER = "WhoIsMaster";
 local COMM_I_AM_MASTER = "IAmMaster:";
 local COMM_ID_CHECK_PREFIX = "IdCheck:";
+local COMM_VERSION_CHECK_PREFIX = "VersionCheck:";
+
+local OUTDATED_VERSION_MESSAGE = "Your version of GuildRelay is outdated. GO UPDATE!"
 
 local debugMode = true;
 local clientId = 0;
@@ -45,6 +48,8 @@ end
 
 local function initalize()
 	debugMessage("Initializing GuildRelay channels");
+
+	sendAddonBroadcast(COMM_VERSION_CHECK_PREFIX .. GetAddOnMetadata("GuildRelay", "Version"))
 
 	clientId = GetTime() * 1000;
 
@@ -121,6 +126,12 @@ local function handleComm(self, event, ...)
 					relayMaster = sender;
 					relayMasterId = tonumber(string.sub(message, string.len(COMM_ID_CHECK_PREFIX) + 1));
 				end
+			end
+		elseif string.sub(message, 1, string.len(COMM_VERSION_CHECK_PREFIX)) == COMM_VERSION_CHECK_PREFIX then
+			if tonumber(string.sub(message, string.len(COMM_VERSION_CHECK_PREFIX) + 1)) > tonumber(GetAddOnMetadata("GuildRelay", "Version")) then
+				DEFAULT_CHAT_FRAME:AddMessage(">GuildRelay< " .. OUTDATED_VERSION_MESSAGE, 1, 0, 0);
+			else
+				debugMessage("Passed version check");
 			end
 		end
 
