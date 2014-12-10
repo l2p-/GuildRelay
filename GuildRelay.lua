@@ -6,7 +6,6 @@ local COMM_VERSION_CHECK_PREFIX = "VersionCheck:";
 
 local OUTDATED_VERSION_MESSAGE = "Your version of GuildRelay is outdated. GO UPDATE!"
 
-local debugMode = true;
 local clientId = 0;
 local relayMaster = nil;
 local relayMasterId = 0;
@@ -18,7 +17,7 @@ local isInititalized = false;
 RegisterAddonMessagePrefix(COMM_PREFIX);
 
 local function debugMessage(message)
-	if debugMode then
+	if guildRelayDebugMode then
 		DEFAULT_CHAT_FRAME:AddMessage(">GuildRelay DEBUG< " .. message, 1, 1, 1);
 	end
 end
@@ -42,8 +41,8 @@ local function sendAddonWhisper(message, target)
 end
 
 local function setDebugMode(mode)
-	debugMode = mode;
-	debugMessage("Set debug mode to " .. debugMode);
+	guildRelayDebugMode = mode;
+	debugMessage("Set debug mode to " .. tostring(guildRelayDebugMode));
 end
 
 local function initalize()
@@ -178,7 +177,7 @@ function SlashCmdList.GUILDRELAY(message, editbox)
 		end
 	elseif command == "dump" then
 		debugMessage("valid command: " .. command);
-		DEFAULT_CHAT_FRAME:AddMessage("debugMode: " .. tostring(debugMode), 1, 1, 1);
+		DEFAULT_CHAT_FRAME:AddMessage("debugMode: " .. tostring(guildRelayDebugMode), 1, 1, 1);
 		DEFAULT_CHAT_FRAME:AddMessage("clientId: " .. clientId, 1, 1, 1);
 		DEFAULT_CHAT_FRAME:AddMessage("relayMaster: " .. tostring(relayMaster), 1, 1, 1);
 		DEFAULT_CHAT_FRAME:AddMessage("relayMasterId: " .. relayMasterId, 1, 1, 1);

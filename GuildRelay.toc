@@ -2,4 +2,5 @@
 ## Title: Guild Relay
 ## Notes: Some text about relaying guild chat thingimabob
 ## Version: 0.2
-GuildRelay.lua 
+## SavedVariables: guildRelayDebugMode
+GuildRelay.lua
