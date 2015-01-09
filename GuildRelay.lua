@@ -160,6 +160,23 @@ local function onChannelEvent(self, event, ...)
 end
 frame3:SetScript("OnEvent", onChannelEvent);
 
+local frame4 = CreateFrame("FRAME");
+frame4:RegisterEvent("CHAT_MSG_CHANNEL");
+local function onIncomingMessage(self, event, ...)
+
+	chatMessage, author, lang, channel, target, flag, zoneId, channelNumber, channelName, lineId, senderGuid = ...;
+
+	if channelName == relayChannelName then
+		if isRelayMaster() then
+			if not (string.sub(chatMessage, 1, 1) == "[") then
+				debugMessage("Incoming message detected, relaying...")
+				SendChatMessage(">GR< [" .. author .. "] " .. chatMessage, "GUILD");
+			end
+		end
+	end
+end
+frame4:SetScript("OnEvent", onIncomingMessage);
+
 SLASH_GUILDRELAY1 = "/guildrelay";
 SLASH_GUILDRELAY2 = "/gry";
 function SlashCmdList.GUILDRELAY(message, editbox)
@@ -188,6 +205,7 @@ function SlashCmdList.GUILDRELAY(message, editbox)
 		DEFAULT_CHAT_FRAME:AddMessage("\"" .. command .. "\" - " .. "Invalid command", 1, 1, 1);
 	end
 end
+
 
 --[[
 local function updateIsRelayMaster()
